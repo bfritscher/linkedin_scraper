@@ -90,6 +90,7 @@ class Person(Scraper):
         for position in exp.find_elements_by_class_name("pv-position-entity"):
             position_title = position.find_element_by_tag_name("h3").text
             company = position.find_element_by_class_name("pv-entity__secondary-title").text
+            company_linkedin_id = position.find_element_by_css_selector("[data-control-name='background_details_company']").get_attribute('href')
 
             try:
                 times = position.find_element_by_class_name("pv-entity__date-range").text
@@ -98,6 +99,7 @@ class Person(Scraper):
                 from_date, to_date = (None, None)
             experience = Experience( position_title = position_title , from_date = from_date , to_date = to_date)
             experience.institution_name = company
+            experience.linkedin_id = company_linkedin_id
             self.add_experience(experience)
 
         driver.execute_script("window.scrollTo(0, Math.ceil(document.body.scrollHeight/1.5));")

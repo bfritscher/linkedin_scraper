@@ -7,6 +7,7 @@ class Institution(object):
     headquarters = None
     company_size = None
     founded = None
+    linkedin_id = None
 
     def __init__(self, name=None, website=None, industry=None, type=None, headquarters=None, company_size=None, founded=None):
         self.name = name
