@@ -10,6 +10,7 @@ import os
 
 class Person(Scraper):
     name = None
+    profile_picture = None
     experiences = []
     educations = []
     also_viewed_urls = []
@@ -56,6 +57,29 @@ class Person(Scraper):
     def scrape_logged_in(self, close_on_complete = True):
         driver = self.driver
         self.name = driver.find_element_by_class_name("pv-top-card-section__name").text
+
+        # get image
+        self.profile_picture = driver.execute_async_script("""
+        const done = arguments[0];
+        function toDataUrl(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                    callback(reader.result);
+                }
+                reader.readAsDataURL(xhr.response);
+            };
+            xhr.open('GET', url);
+            xhr.responseType = 'blob';
+            xhr.send();
+        }
+        const b = document.querySelector('.presence-entity div').style.backgroundImage;
+        const url  = b.slice(5, b.length-2);
+        toDataUrl(url, function(myBase64) {
+            done(myBase64);
+        });
+        """)
 
         driver.execute_script("window.scrollTo(0, Math.ceil(document.body.scrollHeight/2));")
 
@@ -139,7 +163,7 @@ class Person(Scraper):
             education.institution_name = university
             self.add_education(education)
 
-        # get 
+        # get
         if close_on_complete:
             driver.close()
 
